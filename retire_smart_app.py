@@ -1,5 +1,5 @@
 import streamlit as st
-st.set_page_config(page_title="RetireSmart", layout="wide")
+st.set_page_config(page_title="DeepLing", layout="wide")
 st.markdown("<a id='top_anchor'></a>", unsafe_allow_html=True)
 import pandas as pd
 import dashscope
@@ -264,7 +264,7 @@ h1, h2, h3 {
 </style>
 """, unsafe_allow_html=True)
 
-st.title("👵 RetireSmart: Your AI-Powered Retirement Planner")
+st.title("👵 DeepLing: Your AI-Powered Retirement Planner")
 st.markdown("Use AI to analyze your spending and savings. Get **beautiful**, **clear**, and **smart** financial guidance.")
 
 st.subheader("📂 Step 1: Upload Your Spending Files")
