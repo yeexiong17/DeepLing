@@ -16,7 +16,6 @@ dashscope.base_http_api_url = "https://dashscope-intl.aliyuncs.com/api/v1"
 ASR_APP_KEY = "M5PHTh3kdqKqliKk"
 ASR_TOKEN = "bbffcbadcbdc4909ba82a0fea7b0e632"
 
-# Session State Initializations
 if 'user_prompt_content' not in st.session_state:
     st.session_state.user_prompt_content = ""
 if 'live_audio_just_transcribed' not in st.session_state:
@@ -38,7 +37,6 @@ if 'current_follow_up_question' not in st.session_state:
 if 'current_follow_up_answer' not in st.session_state:
     st.session_state.current_follow_up_answer = None
 
-# --- Helper Function Definitions ---
 def convert_file_to_dataframe(file):
     try:
         if file.name.endswith(".csv"):
@@ -64,8 +62,6 @@ def parse_ai_response_for_plan_and_questions(response_content):
     main_answer = ""
     questions = []
     
-    # Define a marker for where follow-up questions begin
-    # The AI will be instructed to use this marker.
     question_marker = "Suggested Follow-up Questions:"
     parts = response_content.split(question_marker)
     
@@ -75,19 +71,18 @@ def parse_ai_response_for_plan_and_questions(response_content):
         question_block = parts[1].strip()
         for line in question_block.split('\n'):
             cleaned_line = re.sub(r'^\s*[-*1-9.]+\s*', '', line).strip()
-            if cleaned_line and cleaned_line.endswith('?'): # Basic check for a question
+            if cleaned_line and cleaned_line.endswith('?'):
                 questions.append(cleaned_line)
     
-    return main_answer, questions[:4] # Return main answer and up to 4 questions
+    return main_answer, questions[:4]
 
 def generate_follow_up_answer(follow_up_question, spending_files_ref, savings_files_ref):
     st.session_state.current_follow_up_question = follow_up_question
-    st.session_state.current_follow_up_answer = None # Clear previous answer while generating
+    st.session_state.current_follow_up_answer = None
 
     if not st.session_state.main_plan_content or not st.session_state.original_user_query_for_plan:
         st.warning("Cannot answer follow-up: Original plan context is missing. Please generate a main plan first.")
-        # Ensure UI updates to show this warning if a follow-up is clicked without a main plan
-        st.session_state.current_follow_up_question = None # Clear question as well
+        st.session_state.current_follow_up_question = None
         return
 
     with st.spinner(f"AI is answering: '{follow_up_question}'..."):
@@ -133,30 +128,25 @@ Suggested Follow-up Questions:
             )
             raw_ai_content_for_follow_up = response.output.choices[0].message.content
             
-            # Parse the response to get both the answer to the current follow-up and new suggestions
             answer_to_current_follow_up, new_follow_up_suggestions = parse_ai_response_for_plan_and_questions(raw_ai_content_for_follow_up)
 
             st.session_state.current_follow_up_answer = answer_to_current_follow_up
-            st.session_state.ai_generated_suggestions = new_follow_up_suggestions # Update with new suggestions
+            st.session_state.ai_generated_suggestions = new_follow_up_suggestions
 
         except Exception as e:
             st.error(f"Error generating follow-up answer: {str(e)}")
             st.session_state.current_follow_up_answer = f"Could not generate answer due to error: {e}"
-            # Keep st.session_state.current_follow_up_question set so user sees which question failed.
 
-# New function to handle suggestion click
 def handle_suggestion_click(question_text, current_spending_files, current_savings_files):
     st.session_state.user_prompt_content = question_text
-    # Call the function to generate and store the follow-up answer
     generate_follow_up_answer(question_text, current_spending_files, current_savings_files)
-    # No explicit st.rerun() here, on_click handles the rerun.
 
 def generate_and_display_retirement_plan(spending_files_ref, savings_files_ref):
     current_user_question = st.session_state.get("user_prompt_content", "")
-    st.session_state.ai_generated_suggestions = [] # Clear previous suggestions
-    st.session_state.main_plan_content = "" # Clear previous main plan
-    st.session_state.original_user_query_for_plan = current_user_question # Store current query
-    st.session_state.current_follow_up_question = None # Clear any active follow-up
+    st.session_state.ai_generated_suggestions = []
+    st.session_state.main_plan_content = ""
+    st.session_state.original_user_query_for_plan = current_user_question
+    st.session_state.current_follow_up_question = None
     st.session_state.current_follow_up_answer = None
 
     if not (spending_files_ref and current_user_question.strip()):
@@ -176,7 +166,6 @@ def generate_and_display_retirement_plan(spending_files_ref, savings_files_ref):
 
             num_savings_files = len(savings_files_ref) if savings_files_ref else 0
 
-            # Updated prompt to ask for plan and follow-up questions
             full_prompt = f"""
 User Question: {current_user_question}
 
@@ -216,7 +205,7 @@ Suggested Follow-up Questions:
                 st.success(main_answer)
             else:
                 st.warning("Could not extract a main answer from the AI response.")
-                st.info(f"Raw AI response: {raw_ai_content}") # Show raw if parsing fails for main answer
+                st.info(f"Raw AI response: {raw_ai_content}")
 
             st.session_state.ai_generated_suggestions = followup_questions
 
@@ -231,7 +220,6 @@ Suggested Follow-up Questions:
         finally:
             st.session_state.show_ai_suggestions = True
 
-# --- Main App Layout (Ensuring functions above are defined first) ---
 st.markdown("""
 <style>
 body {
@@ -285,14 +273,6 @@ spending_files = st.file_uploader("Upload spending documents", type=None, accept
 
 st.subheader("💰 Step 2: Upload Your Savings Documents (Optional)")
 savings_files = st.file_uploader("Upload savings documents (view-only)", type=None, accept_multiple_files=True)
-
-# --- Process suggestion click from previous run ---
-# This block will be removed as per plan.
-# if st.session_state.suggestion_clicked_content is not None:
-#     st.session_state.user_prompt_content = st.session_state.suggestion_clicked_content
-#     st.session_state.suggestion_clicked_content = None
-#     st.session_state.ai_generated_suggestions = [] 
-#     generate_and_display_retirement_plan(spending_files, savings_files)
 
 st.subheader("🗣️ Alternative: Ask Your Question via Speech")
 
@@ -434,18 +414,6 @@ if st.button("💬 Generate My Retirement Plan"):
     st.session_state.ai_generated_suggestions = [] 
     generate_and_display_retirement_plan(spending_files, savings_files)
 
-# --- Display Follow-up Answer if available ---
-if st.session_state.get('current_follow_up_question') and st.session_state.get('current_follow_up_answer'):
-    st.markdown("---") 
-    st.markdown(f"#### 💬 Answer to your follow-up: \"_{st.session_state.current_follow_up_question}_\"")
-    st.info(st.session_state.current_follow_up_answer)
-elif st.session_state.get('current_follow_up_question') and not st.session_state.get('current_follow_up_answer'):
-    # This case handles if generate_follow_up_answer started (set a question) but failed to produce an answer (e.g. warning issued)
-    # It might be covered by the warning inside generate_follow_up_answer already, but good to be robust.
-    # For now, the warning in generate_follow_up_answer should be sufficient if it doesn't set current_follow_up_answer.
-    pass
-
-
 if st.session_state.get('show_ai_suggestions', False):
     suggestions_to_show = st.session_state.get('ai_generated_suggestions', [])
     if suggestions_to_show:
@@ -461,5 +429,11 @@ if st.session_state.get('show_ai_suggestions', False):
                     args=(question, spending_files, savings_files)
                 )
     elif st.session_state.get("user_prompt_content") and st.session_state.get("main_plan_content"): 
-        # Show this message only if a main plan was generated but no suggestions came with it.
         st.info("No specific follow-up questions were generated or extracted for this query.")
+
+if st.session_state.get('current_follow_up_question') and st.session_state.get('current_follow_up_answer'):
+    st.markdown("---") 
+    st.markdown(f"#### 💬 Answer to your follow-up: \"_{st.session_state.current_follow_up_question}_\"")
+    st.info(st.session_state.current_follow_up_answer)
+elif st.session_state.get('current_follow_up_question') and not st.session_state.get('current_follow_up_answer'):
+    pass
