@@ -87,7 +87,7 @@ This will typically open the application in your default web browser.
 ```
 .
 ├── retire_smart_app.py         # Main Streamlit application
-├── custom_speech_recognition.py # Module for speech recognition (assumed)
+├── custom_speech_recognition.py # Module for speech recognition
 ├── requirements.txt            # Python dependencies
 └── README.md                   # This file
 ```
