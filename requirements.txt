@@ -1,4 +1,5 @@
-streamlit
-dashscope
-streamlit-mic-recorder
-pydub
+streamlit>=1.0.0
+pandas>=1.0.0
+dashscope>=1.10.0
+pydub>=0.25.0
+streamlit-mic-recorder>=0.0.5
