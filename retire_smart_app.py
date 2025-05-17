@@ -36,6 +36,8 @@ if 'current_follow_up_question' not in st.session_state:
     st.session_state.current_follow_up_question = None
 if 'current_follow_up_answer' not in st.session_state:
     st.session_state.current_follow_up_answer = None
+if 'show_dashboard' not in st.session_state:
+    st.session_state.show_dashboard = False
 
 def convert_file_to_dataframe(file):
     try:
@@ -267,12 +269,32 @@ h1, h2, h3 {
 st.title("👵 DeepLing: Your AI-Powered Retirement Planner")
 st.markdown("Use AI to analyze your spending and savings. Get **beautiful**, **clear**, and **smart** financial guidance.")
 
+if st.session_state.get('show_dashboard', False):
+    st.markdown("""
+    <div style="width: 100%; height: 320px; overflow: hidden; border: none;">
+        <iframe 
+            src="https://bi.aliyun.com/token3rd/dashboard/view/pc.htm?pageId=ddf48440-adda-4ba5-aa45-1c5ab5869934&embedDisplayParam=%7B%22showTitle%22%3Afalse%7D&accessTicket=8a9a5d58-4ccd-4bb2-bcac-e181f42263cb" 
+            width="100%" 
+            height="600px" 
+            style="border:none; position: relative; top: 0; left: 0;">
+        </iframe>
+    </div>
+    """, unsafe_allow_html=True)
+
 st.subheader("📂 Step 1: Upload Your Spending Files")
 st.caption("Accepted formats: `.csv`, `.xls`, `.xlsx`, `.txt`. Other files will be view-only.")
 spending_files = st.file_uploader("Upload spending documents", type=None, accept_multiple_files=True)
 
 st.subheader("💰 Step 2: Upload Your Savings Documents (Optional)")
 savings_files = st.file_uploader("Upload savings documents (view-only)", type=None, accept_multiple_files=True)
+
+st.subheader("📝 Step 3: Ask Your Retirement Question")
+
+st.text_area(
+    "Example: How can I budget for medical expenses after retirement?",
+    height=150,
+    key="user_prompt_content"
+)
 
 st.subheader("🗣️ Alternative: Ask Your Question via Speech")
 
@@ -401,17 +423,10 @@ if audio_file is not None:
             elif file_extension == 'mp3' and not audio_bytes_to_send:
                  st.info("Transcription from MP3 was skipped due to conversion error.")
 
-st.subheader("📝 Step 3: Ask Your Retirement Question")
-
-st.text_area(
-    "Example: How can I budget for medical expenses after retirement?",
-    height=150,
-    key="user_prompt_content"
-)
-
 st.markdown("---")
 if st.button("💬 Generate My Retirement Plan"):
     st.session_state.ai_generated_suggestions = [] 
+    st.session_state.show_dashboard = True
     generate_and_display_retirement_plan(spending_files, savings_files)
 
 if st.session_state.get('show_ai_suggestions', False):
