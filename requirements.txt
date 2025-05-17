@@ -1,0 +1,4 @@
+streamlit
+dashscope
+streamlit-mic-recorder
+pydub
