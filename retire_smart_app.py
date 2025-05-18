@@ -14,7 +14,7 @@ DASHSCOPE_API_KEY = 'sk-0cb128a3e6d14c2eb467498b3de8705f'
 dashscope.base_http_api_url = "https://dashscope-intl.aliyuncs.com/api/v1"
 
 ASR_APP_KEY = "M5PHTh3kdqKqliKk"
-ASR_TOKEN = "bbffcbadcbdc4909ba82a0fea7b0e632"
+ASR_TOKEN = "11bc19971d4845d5a3afed8db30ba2e9"
 
 if 'user_prompt_content' not in st.session_state:
     st.session_state.user_prompt_content = ""
@@ -38,6 +38,10 @@ if 'current_follow_up_answer' not in st.session_state:
     st.session_state.current_follow_up_answer = None
 if 'show_dashboard' not in st.session_state:
     st.session_state.show_dashboard = False
+
+def on_text_area_change():
+    if "user_prompt_input_key" in st.session_state:
+        st.session_state.user_prompt_content = st.session_state.user_prompt_input_key
 
 def convert_file_to_dataframe(file):
     try:
@@ -292,8 +296,10 @@ st.subheader("📝 Step 3: Ask Your Retirement Question")
 
 st.text_area(
     "Example: How can I budget for medical expenses after retirement?",
-    height=150,
-    key="user_prompt_content"
+    value=st.session_state.user_prompt_content,
+    on_change=on_text_area_change,
+    key="user_prompt_input_key",
+    height=150
 )
 
 st.subheader("🗣️ Alternative: Ask Your Question via Speech")
