@@ -277,10 +277,10 @@ if st.session_state.get('show_dashboard', False):
     st.markdown("""
     <div style="width: 100%; height: 320px; overflow: hidden; border: none;">
         <iframe 
-            src="https://bi.aliyun.com/token3rd/dashboard/view/pc.htm?pageId=ddf48440-adda-4ba5-aa45-1c5ab5869934&embedDisplayParam=%7B%22showTitle%22%3Afalse%7D&accessTicket=8a9a5d58-4ccd-4bb2-bcac-e181f42263cb" 
-            width="100%" 
+        src="https://bi.aliyun.com/token3rd/dashboard/view/pc.htm?pageId=ddf48440-adda-4ba5-aa45-1c5ab5869934&embedDisplayParam=%7B%22showTitle%22%3Afalse%7D&accessTicket=9ea3a03f-1787-4ba4-8e1f-77a15f4bb518"
+          width="100%" 
             height="600px" 
-            style="border:none; position: relative; top: 0; left: 0;">
+            style="border:none; position: relative; top: 0; left: 0;">>
         </iframe>
     </div>
     """, unsafe_allow_html=True)
